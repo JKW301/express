@@ -4,5 +4,10 @@ block content
   h1= title
   p Welcome to #{title}
 
-  a(href='auth/login') Se connecter
-  a(href='auth/signup') S'inscrire
+  a(href='/auth/login') Se connecter
+  a(href='/auth/signup') S'inscrire
+
+  p Ci dessous la liste
+  ul
+    each user in users
+      li= user.email

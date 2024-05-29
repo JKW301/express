@@ -2,9 +2,16 @@ var express = require('express');
 var router = express.Router();
 const pool = require('../db');
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+
+// Route to display all users
+router.get('/', async function(req, res, next) {
+  try {
+    const result = await pool.query('SELECT * FROM users');
+    res.render('index', { title: 'Liste des utilisateurs', users: result.rows });
+  } catch (err) {
+    console.error('Erreur lors de la récupération des utilisateurs :', err);
+    next(err); // Pass the error to the error handling middleware
+  }
 });
 
 // Affichage du formulaire de connexion
