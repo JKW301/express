@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+  h1 Connexion
+  if error
+    p(style="color: red;") #{error}
+  form(action="/auth/login" method="POST")
+    div
+      label(for="username") Nom d'utilisateur
+      input(type="text" id="username" name="username" required)
+    div
+      label(for="password") Mot de passe
+      input(type="password" id="password" name="password" required)
+    div
+      button(type="submit") Se connecter

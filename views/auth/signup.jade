@@ -1,0 +1,15 @@
+extends ../layout
+
+block content
+  h1 S'inscrire
+  form(action="/auth/signup" method="POST")
+    div
+      label(for="email") Nom d'utilisateur
+      input(type="text" id="email" name="email" required)
+    div
+      label(for="password") Mot de passe
+      input(type="password" id="password" name="password" required)
+    div
+      button(type="submit") S'inscrire
+  p
+    a(href='/auth/login') Se connecter
