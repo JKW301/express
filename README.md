@@ -1,25 +1,24 @@
-# A faire
+# To-do
 
-- Connexion
-    - page d'accueil après connexion
+- Login
+    - welcome page after login
 
 - Vidéos
+    - add more directories
     - resizable video player
     - forbid right-clic
     - selectable video quality
 
-# Etat actuel
+# Progress made
 
-- Inscription utilisateur
-- Listing des vidéos dans le répertoire $HOME local
-- Page lecture de vidéo
+- User registration
+- Listing videos in the local $HOME directory
+- Video playback page
 
 
 # CHEAT SHEET
 
-- Connexion à la base de données: 
 <psql -U debian -h localhost -d expressdb>
 
-- Ou : 
 <sudo -u postgres psql>
 <\c expressdb>

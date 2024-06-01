@@ -7,51 +7,44 @@ const ffprobe = require('ffprobe-static');
 const fs = require('fs');
 const path = require('path');
 
-// Route to display all users
 router.get('/', async function(req, res, next) {
   try {
     const result = await pool.query('SELECT * FROM users');
     res.render('index', { title: 'Liste des utilisateurs', users: result.rows });
   } catch (err) {
     console.error('Erreur lors de la récupération des utilisateurs :', err);
-    next(err); // Pass the error to the error handling middleware
+    next(err);
   }
 });
 
-// Affichage du formulaire de connexion
 router.get('/auth/login', function(req, res, next) {
   res.render('auth/login', { title: 'Se connecter' });
 });
 
-// Route pour afficher le formulaire d'inscription
 router.get('/auth/signup', function(req, res, next) {
   res.render('auth/signup', { title: 'S\'inscrire' });
 });
 
-// Route pour traiter la soumission du formulaire d'inscription
 router.post('/auth/signup', async function(req, res, next) {
   const { email, password } = req.body;
 
-  console.log('Données reçues :', { email, password }); // Ajoutez ce journal pour vérifier les données reçues
+  console.log('Données reçues :', { email, password });
 
-  // Logique pour ajouter un nouvel utilisateur dans la base de données
   try {
     const result = await pool.query('INSERT INTO users (email, password) VALUES ($1, $2)', [email, password]);
-    console.log('Résultat de l\'insertion :', result); // Ajoutez ce journal pour vérifier le résultat de l'insertion
-    res.redirect('/auth/login'); // Redirige vers la page de connexion après inscription
+    console.log('Résultat de l\'insertion :', result);
+    res.redirect('/auth/login');
   } catch (err) {
-    console.error('Erreur lors de l\'insertion :', err); // Ajoutez ce journal pour vérifier l'erreur
-    next(err); // Passe l'erreur au middleware de gestion des erreurs
+    console.error('Erreur lors de l\'insertion :', err);
+    next(err);
   }
 });
 
-// Traitement de la soumission du formulaire de connexion
 router.post('/auth/login', function(req, res, next) {
   const { email, password } = req.body;
 
-  // Remplacez cette partie par la logique réelle d'authentification
   if (email === 'test' && password === 'password') {
-    res.redirect('/'); // Redirige vers la page d'accueil en cas de succès
+    res.redirect('/');
   } else {
     res.render('auth/login', { title: 'Se connecter', error: 'Nom d\'utilisateur ou mot de passe incorrect' });
   }
@@ -59,9 +52,8 @@ router.post('/auth/login', function(req, res, next) {
 
 ffmpeg.setFfprobePath(ffprobe.path);
 
-// Route pour lister les vidéos
 router.get('/videos', function(req, res, next) {
-  const directory = '/home/debian/';
+  const directory = '/home/debian/dwhelper';
   try {
     const videos = listVideos(directory);
     res.render('videos', { title: 'Liste des vidéos', videos: videos });
@@ -71,7 +63,6 @@ router.get('/videos', function(req, res, next) {
   }
 });
 
-// Route pour afficher la page avec le lecteur vidéo et les informations sur la vidéo
 router.get('/video/:name', function(req, res, next) {
   const videoName = req.params.name;
   const directory = '/home/debian/';
@@ -96,12 +87,10 @@ router.get('/video/:name', function(req, res, next) {
       height: metadata.streams[0].height
     };
 
-    // Utilisation du chemin relatif pour les vidéos
     res.render('video', { title: videoName, videoPath: `/video/stream/${videoName}`, videoInfo: videoInfo });
   });
 });
 
-// Route pour diffuser une vidéo
 router.get('/video/stream/:name', function(req, res, next) {
   const videoName = req.params.name;
   const directory = '/home/debian/';

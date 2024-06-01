@@ -1,15 +1,15 @@
 extends layout
 
 block content
-  .container
+  .container-fluid
     h1= title
-    .row
-      .col-md-6
-        .video-container
-          video#videoPlayer.video-js.vjs-default-skin(controls preload='auto' width="100%" height="25vh")
+    .row.large-row
+      .col-md-8
+        .embed-responsive.embed-responsive-16by9
+          video#videoPlayer.embed-responsive-item.video-js.vjs-default-skin(controls preload='auto')
             source(src=videoPath, type="video/mp4")
             p Votre navigateur ne supporte pas les vidéos HTML5.
-      .col-md-6
+      .col-md-4
         .video-info
           h2 Caractéristiques de la vidéo
           table.table.table-striped

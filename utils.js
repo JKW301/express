@@ -1,13 +1,10 @@
 const fs = require('fs');
 const path = require('path');
 
-const videoExtensions = ['.mp4', '.avi', '.mkv', '.mov'];
+const videoExtensions = ['.mp4'];
 
 function listVideos(directory, videos = [], seenDirs = new Set()) {
-  // Normaliser le chemin pour éviter les problèmes de comparaison
   const normPath = path.resolve(directory);
-
-  // Éviter les boucles en vérifiant si le répertoire a déjà été traité
   if (seenDirs.has(normPath)) {
     return videos;
   }
@@ -21,13 +18,12 @@ function listVideos(directory, videos = [], seenDirs = new Set()) {
       let stat;
 
       try {
-        stat = fs.lstatSync(fullPath); // Utilisez lstatSync pour vérifier les liens symboliques
+        stat = fs.lstatSync(fullPath);
       } catch (err) {
         console.error(`Erreur lors de l'accès à ${fullPath}:`, err.message);
         continue;
       }
 
-      // Si c'est un lien symbolique, l'ignorer
       if (stat.isSymbolicLink()) {
         continue;
       }
