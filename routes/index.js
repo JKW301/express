@@ -71,8 +71,38 @@ router.get('/videos', function(req, res, next) {
   }
 });
 
-// Route pour diffuser une vidéo
+// Route pour afficher la page avec le lecteur vidéo et les informations sur la vidéo
 router.get('/video/:name', function(req, res, next) {
+  const videoName = req.params.name;
+  const directory = '/home/debian/';
+  const videoPath = listVideos(directory).find(video => path.basename(video) === videoName);
+
+  if (!videoPath) {
+    return next(new Error('Video not found'));
+  }
+
+  ffmpeg.ffprobe(videoPath, function(err, metadata) {
+    if (err) {
+      return next(err);
+    }
+
+    const videoInfo = {
+      filename: videoName,
+      duration: metadata.format.duration,
+      size: metadata.format.size,
+      format: metadata.format.format_long_name,
+      codec: metadata.streams[0].codec_name,
+      width: metadata.streams[0].width,
+      height: metadata.streams[0].height
+    };
+
+    // Utilisation du chemin relatif pour les vidéos
+    res.render('video', { title: videoName, videoPath: `/video/stream/${videoName}`, videoInfo: videoInfo });
+  });
+});
+
+// Route pour diffuser une vidéo
+router.get('/video/stream/:name', function(req, res, next) {
   const videoName = req.params.name;
   const directory = '/home/debian/';
   const videoPath = listVideos(directory).find(video => path.basename(video) === videoName);
@@ -111,33 +141,4 @@ router.get('/video/:name', function(req, res, next) {
   }
 });
 
-// Route pour afficher les détails de la vidéo
-router.get('/video-info/:name', function(req, res, next) {
-  const videoName = req.params.name;
-  const directory = '/home/debian/';
-  const videoPath = listVideos(directory).find(video => path.basename(video) === videoName);
-
-  if (!videoPath) {
-    return next(new Error('Video not found'));
-  }
-
-  ffmpeg.ffprobe(videoPath, function(err, metadata) {
-    if (err) {
-      return next(err);
-    }
-
-    const videoInfo = {
-      filename: videoName,
-      duration: metadata.format.duration,
-      size: metadata.format.size,
-      format: metadata.format.format_long_name,
-      codec: metadata.streams[0].codec_name,
-      width: metadata.streams[0].width,
-      height: metadata.streams[0].height
-    };
-
-    // Utilisation du chemin relatif pour les vidéos
-    res.render('video', { title: videoName, videoPath: `/video/${videoName}`, videoInfo: videoInfo });
-  });
-});
 module.exports = router;

@@ -15,7 +15,9 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
-app.use('/videos', express.static('/home/debian'));
+//app.use('/videos', express.static('/home/debian'));
+app.use('/videojs', express.static(path.join('/home/debian', 'node_modules', 'video.js', 'dist')));
+
 
 app.use(logger('dev'));
 app.use(express.json());
