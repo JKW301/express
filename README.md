@@ -4,12 +4,16 @@
     - page d'accueil après connexion
 
 - Vidéos
-    - page lecture de vidéo
+    - resizable video player
+    - forbid right-clic
+    - selectable video quality
 
 # Etat actuel
 
 - Inscription utilisateur
 - Listing des vidéos dans le répertoire $HOME local
+- Page lecture de vidéo
+
 
 # CHEAT SHEET
 

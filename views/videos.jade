@@ -5,4 +5,4 @@ block content
   ul
     each video in videos
       li
-        a(href=video)= video
+        a(href=`/video/${video.split('/').pop()}`)= video.split('/').pop()

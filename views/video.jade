@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1= title
+  video(controls, width="600")
+    source(src=videoPath, type="video/mp4")
+    p Votre navigateur ne supporte pas les vidéos HTML5.
+
+  h2 Caractéristiques de la vidéo
+  table
+    tr
+      th Nom de fichier
+      td= videoInfo.filename
+    tr
+      th Durée
+      td= videoInfo.duration + ' secondes'
+    tr
+      th Taille
+      td= videoInfo.size + ' octets'
+    tr
+      th Format
+      td= videoInfo.format
+    tr
+      th Codec
+      td= videoInfo.codec
+    tr
+      th Résolution
+      td= videoInfo.width + 'x' + videoInfo.height

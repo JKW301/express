@@ -2,7 +2,10 @@ var express = require('express');
 var router = express.Router();
 const pool = require('../db');
 const { listVideos } = require('../utils');
-
+const ffmpeg = require('fluent-ffmpeg');
+const ffprobe = require('ffprobe-static');
+const fs = require('fs');
+const path = require('path');
 
 // Route to display all users
 router.get('/', async function(req, res, next) {
@@ -54,6 +57,8 @@ router.post('/auth/login', function(req, res, next) {
   }
 });
 
+ffmpeg.setFfprobePath(ffprobe.path);
+
 // Route pour lister les vidéos
 router.get('/videos', function(req, res, next) {
   const directory = '/home/debian/';
@@ -66,4 +71,73 @@ router.get('/videos', function(req, res, next) {
   }
 });
 
+// Route pour diffuser une vidéo
+router.get('/video/:name', function(req, res, next) {
+  const videoName = req.params.name;
+  const directory = '/home/debian/';
+  const videoPath = listVideos(directory).find(video => path.basename(video) === videoName);
+
+  if (!videoPath) {
+    return next(new Error('Video not found'));
+  }
+
+  const stat = fs.statSync(videoPath);
+  const fileSize = stat.size;
+  const range = req.headers.range;
+
+  if (range) {
+    const parts = range.replace(/bytes=/, '').split('-');
+    const start = parseInt(parts[0], 10);
+    const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+    const chunkSize = end - start + 1;
+    const file = fs.createReadStream(videoPath, { start, end });
+    const head = {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunkSize,
+      'Content-Type': 'video/mp4',
+    };
+
+    res.writeHead(206, head);
+    file.pipe(res);
+  } else {
+    const head = {
+      'Content-Length': fileSize,
+      'Content-Type': 'video/mp4',
+    };
+
+    res.writeHead(200, head);
+    fs.createReadStream(videoPath).pipe(res);
+  }
+});
+
+// Route pour afficher les détails de la vidéo
+router.get('/video-info/:name', function(req, res, next) {
+  const videoName = req.params.name;
+  const directory = '/home/debian/';
+  const videoPath = listVideos(directory).find(video => path.basename(video) === videoName);
+
+  if (!videoPath) {
+    return next(new Error('Video not found'));
+  }
+
+  ffmpeg.ffprobe(videoPath, function(err, metadata) {
+    if (err) {
+      return next(err);
+    }
+
+    const videoInfo = {
+      filename: videoName,
+      duration: metadata.format.duration,
+      size: metadata.format.size,
+      format: metadata.format.format_long_name,
+      codec: metadata.streams[0].codec_name,
+      width: metadata.streams[0].width,
+      height: metadata.streams[0].height
+    };
+
+    // Utilisation du chemin relatif pour les vidéos
+    res.render('video', { title: videoName, videoPath: `/video/${videoName}`, videoInfo: videoInfo });
+  });
+});
 module.exports = router;
