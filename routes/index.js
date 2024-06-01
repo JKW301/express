@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const pool = require('../db');
+const { listVideos } = require('../utils');
 
 
 // Route to display all users
@@ -41,9 +42,6 @@ router.post('/auth/signup', async function(req, res, next) {
   }
 });
 
-
-
-
 // Traitement de la soumission du formulaire de connexion
 router.post('/auth/login', function(req, res, next) {
   const { email, password } = req.body;
@@ -53,6 +51,18 @@ router.post('/auth/login', function(req, res, next) {
     res.redirect('/'); // Redirige vers la page d'accueil en cas de succès
   } else {
     res.render('auth/login', { title: 'Se connecter', error: 'Nom d\'utilisateur ou mot de passe incorrect' });
+  }
+});
+
+// Route pour lister les vidéos
+router.get('/videos', function(req, res, next) {
+  const directory = '/home/debian/';
+  try {
+    const videos = listVideos(directory);
+    res.render('videos', { title: 'Liste des vidéos', videos: videos });
+  } catch (err) {
+    console.error('Erreur lors de la récupération des vidéos :', err);
+    next(err);
   }
 });
 
